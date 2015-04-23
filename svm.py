@@ -1,16 +1,8 @@
-# for converting byte to unsigned integer
 import struct
-
 import numpy
 
-from sklearn.multiclass import OneVsOneClassifier
-from sklearn.svm import LinearSVC
-
-import pylab
-
-
-# read training file ########################################
-nrTrain = 800
+# # read training file ########################################
+nrTrain = 1000
 y = numpy.zeros(nrTrain)
 X = numpy.zeros((nrTrain, 784))
 
@@ -18,25 +10,24 @@ X = numpy.zeros((nrTrain, 784))
 with open("train-labels.idx1-ubyte", "rb") as fileLabels:
     byte = fileLabels.read(8)
 
-    for n in range(1, nrTrain):
+    for n in range(0, nrTrain):
         byte = fileLabels.read(1)
         value = struct.unpack('B', byte)
         y[n] = value[0]
-
 
 # read training set image file
 with open("train-images.idx3-ubyte", "rb") as fileImages:
     byte = fileImages.read(16)
 
-    for n in range(1, nrTrain):
-        for i in range(1, 784):
+    for n in range(0, nrTrain):
+        for i in range(0, 784):
             byte = fileImages.read(1)
             value = struct.unpack('B', byte)
             X[n, i] = value[0]
 
 
-# read testing file ############################################
-nrTest = 20
+# # read testing file ############################################
+nrTest = 2000
 TestY = numpy.zeros(nrTest)
 TestX = numpy.zeros((nrTest, 784))
 
@@ -44,7 +35,7 @@ TestX = numpy.zeros((nrTest, 784))
 with open("t10k-labels.idx1-ubyte", "rb") as fileLabels:
     byte = fileLabels.read(8)
 
-    for n in range(1, nrTest):
+    for n in range(0, nrTest):
         byte = fileLabels.read(1)
         value = struct.unpack('B', byte)
         TestY[n] = value[0]
@@ -54,37 +45,41 @@ with open("t10k-labels.idx1-ubyte", "rb") as fileLabels:
 with open("t10k-images.idx3-ubyte", "rb") as fileImages:
     byte = fileImages.read(16)
 
-    for n in range(1, nrTest):
-        for i in range(1, 784):
+    for n in range(0, nrTest):
+        for i in range(0, 784):
             byte = fileImages.read(1)
             value = struct.unpack('B', byte)
             TestX[n, i] = value[0]
 
-
-# start training #####################################
-clf = OneVsOneClassifier(LinearSVC()).fit(X, y)
-
-# google method
-from sklearn.svm import SVC
-# scikit-learn dimension reduction
-from sklearn.decomposition import PCA
-
-# scikit-learn dataset processing utils
-from sklearn.preprocessing import MinMaxScaler
-min_max_scaler = MinMaxScaler()
-pca = PCA(n_components=80)
+# # visualization #########################################
+# import pylab
+# i = 1900
+# print(TestY[i])
+# pylab.imshow(numpy.reshape(TestX[i], (28, 28)))
+# pylab.show()
 
 
-tuned_parameters = [{'kernel': ['rbf'], 'gamma': [0.1, 1e-2, 1e-3],
-                     'C': [10, 100, 1000]}, {'kernel': ['poly'],
-                                             'degree': [5, 9], 'C': [1, 10]}]
+# # preprocessing #####################################
 
-from sklearn.grid_search import GridSearchCV
-svm = GridSearchCV(SVC(), tuned_parameters, cv=3, verbose=2).fit(X, y)
-# testing ################################################
-print(clf.predict(TestX))
-print(svm.predict(TestX))
-print(TestY[0:20])
+# from sklearn.preprocessing import MinMaxScaler
+# min_max_scaler = MinMaxScaler()
 
-pylab.imshow(numpy.reshape(TestX[5], (28, 28)))
-pylab.show()
+# X = min_max_scaler.fit_transform(X)
+# TestX = min_max_scaler.transform(TestX)
+
+# X = X/255.0*2 - 1
+# TestX = TestX/255.0*2 - 1
+
+# # start training #####################################
+from sklearn import svm
+
+rbfClf = svm.SVC().fit(X, y)    # default svm
+# rbfClf = svm.SVC(C=2.8, gamma= 0.0073).fit(X, y)    # default svm
+linClf = svm.SVC(kernel='linear').fit(X, y)
+polyClf = svm.SVC(kernel='poly').fit(X, y)
+
+# # testing ################################################
+from sklearn.metrics import accuracy_score
+print(accuracy_score(TestY, rbfClf.predict(TestX)))
+print(accuracy_score(TestY, linClf.predict(TestX)))
+print(accuracy_score(TestY, polyClf.predict(TestX)))
