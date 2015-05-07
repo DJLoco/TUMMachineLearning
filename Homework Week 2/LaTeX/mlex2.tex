@@ -11,7 +11,16 @@
 in Computer Vision: Week 2}
 \hrulefill
 
-\subsection*{Exercice 2:}
+Liu, Nan \\
+Wiedemann, Andreas\\
+
+Github: \url{https://github.com/DJLoco/TUMMachineLearning.git}\\
+
+
+\hrulefill
+
+
+\subsection*{Exercise 2:}
 Backpropagation with single modified neuron:
 \begin{itemize}
 \item Input $x$: Set the corresponding activation $a_{j}^{1}$ for the input layer.
@@ -26,7 +35,7 @@ Backpropagation with single modified neuron:
 \[\frac{\partial C}{\partial w_{jk}^{l}} = a_{k}^{l-1}\delta_{j}^{l} \text{ and }\frac{\partial C}{\partial b_{j}^{l}}= \delta_{j}^{l}\]
 \end{itemize}
 
-\subsection*{Exercice 3.2:}
+\subsection*{Exercise 3.2:}
 The objective is to get to know the Caffe , a powerful framework of Neural Network and Deep Learning. First of all, to install, compile Caffe and run the example. Then use the Imagenet network  set up in the previous problem to classify each image downloaded from \url{https://vision.in.tum.de/teaching/ss2015/mlpractice_ss2015/slides}.
 
 Before Classification, we preprocessed the images by setting the input channel order for BRG as needed for the reference ImageNet model, setting the mean to subtract for entering the data, letting the reference model operate on images in [0,255] instead of [0,1] and swapping the channel which makes the reference model has channel in BGR order instead of RGB.  
