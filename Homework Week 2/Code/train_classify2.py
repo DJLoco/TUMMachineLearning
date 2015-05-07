@@ -36,21 +36,30 @@ net = caffe.Classifier(MODEL_FILE, PRETRAINED,
                        image_dims=(256, 256))
 
 
-# preprocessing###############################
+# preprocessing the ImageNet###############################
 transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
 
-transformer.set_transpose('data', (2,0,1))
+transformer.set_transpose('data', (2,1,0))
 transformer.set_mean('data', np.load(caffe_root + 'python/caffe/imagenet/ilsvrc_2012_mean.npy').mean(1).mean(1)) # mean pixel
 transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
 transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
 
 
 net.blobs['data'].reshape(1,3,227,227)
-# net.blobs['data'].data[...] = transformer.preprocess('data', input_images)
+net.blobs['data'].data[...] = transformer.preprocess('data', input_images[0])
 
+  
 # prediction
 caffe.set_mode_gpu()
 prediction = net.predict(input_images)
+
+# entropy
+entropy = [0,0,0,0,0,0,0,0]
+for i in range(0, 8):
+	for j in range(0,1000):
+		prob = prediction[i][j]
+		entropy[i] = entropy[i]-prob * math.log(prob,2)-(1-prob) * math.log(1-prob,2)
+		
 
 # load labels
 imagenet_labels_filename = caffe_root + 'data/ilsvrc12/synset_words.txt'
@@ -59,56 +68,40 @@ labels = np.loadtxt(imagenet_labels_filename, str, delimiter='\t')
 print 'Image 1:'
 print 'predicted class name:', labels[prediction[0].argmax()]
 print 'predicted class probability:', prediction[0][prediction[0].argmax()]
-prob = prediction[0][prediction[0].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[0]
 
 
 print 'Image 2:'
 print 'predicted class name:', labels[prediction[1].argmax()]
 print 'predicted class probability:', prediction[1][prediction[1].argmax()]
-prob = prediction[1][prediction[1].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[1]
 
 print 'Image 3:'
 print 'predicted class name:', labels[prediction[2].argmax()]
 print 'predicted class probability:', prediction[2][prediction[2].argmax()]
-prob = prediction[2][prediction[2].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[2]
 
 print 'Image 4:'
 print 'predicted class name:', labels[prediction[3].argmax()]
 print 'predicted class probability:', prediction[3][prediction[3].argmax()]
-prob = prediction[3][prediction[3].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[3]
 
 print 'Image 5:'
 print 'predicted class name:', labels[prediction[4].argmax()]
 print 'predicted class probability:', prediction[4][prediction[4].argmax()]
-prob = prediction[4][prediction[4].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[4]
 
 print 'Image 6:'
 print 'predicted class name:', labels[prediction[5].argmax()]
 print 'predicted class probability:', prediction[5][prediction[5].argmax()]
-prob = prediction[5][prediction[5].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[5]
 
 print 'Image 7:'
 print 'predicted class name:', labels[prediction[6].argmax()]
 print 'predicted class probability:', prediction[6][prediction[6].argmax()]
-prob = prediction[6][prediction[6].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[6]
 
 print 'Image 8:'
 print 'predicted class name:', labels[prediction[7].argmax()]
 print 'predicted class probability:', prediction[7][prediction[7].argmax()]
-prob = prediction[7][prediction[7].argmax()]
-entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
-print 'entropy of prediction:', entropy
+print 'entropy of prediction:', entropy[7]
