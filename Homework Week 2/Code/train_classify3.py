@@ -38,13 +38,13 @@ net = caffe.Classifier(MODEL_FILE, PRETRAINED,
 # preprocessing###############################
 transformer = caffe.io.Transformer({'data': net.blobs['data'].data.shape})
 
-transformer.set_transpose('data', (2,0,1))
-transformer.set_mean('data', np.load(caffe_root + 'python/caffe/imagenet/ilsvrc_2012_mean.npy').mean(1).mean(1)) # mean pixel
-transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
+# transformer.set_transpose('data', (2,0,1))
+# transformer.set_mean('data', np.load(caffe_root + 'python/caffe/imagenet/ilsvrc_2012_mean.npy').mean(1).mean(1)) # mean pixel
+# transformer.set_raw_scale('data', 255)  # the reference model operates on images in [0,255] range instead of [0,1]
 transformer.set_channel_swap('data', (2,1,0))  # the reference model has channels in BGR order instead of RGB
 
 
-net.blobs['data'].reshape(1,3,227,227)
+# net.blobs['data'].reshape(1,3,227,227)
 # net.blobs['data'].data[...] = transformer.preprocess('data', input_images)
 
 # net.blobs['data'].data[...] = transformer.preprocess('data', caffe.io.load_image(IMAGE_FILE1))
@@ -119,3 +119,8 @@ print 'predicted class probability:', prediction[7][prediction[7].argmax()]
 prob = prediction[7][prediction[7].argmax()]
 entropy = -prob * math.log(prob)-(1-prob) * math.log(1-prob)
 print 'entropy of prediction:', entropy
+
+
+# execfile("train_classify3.py")
+# plt.imshow(input)
+# plt.show()
