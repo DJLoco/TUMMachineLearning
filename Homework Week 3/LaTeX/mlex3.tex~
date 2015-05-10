@@ -1,0 +1,60 @@
+\documentclass[12pt,a4paper,twoside]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\begin{document}
+\section*{Machine Learning for Applications \\
+in Computer Vision: Week 2}
+\hrulefill
+
+Liu, Nan \\
+Wiedemann, Andreas\\
+
+Github: \url{https://github.com/DJLoco/TUMMachineLearning.git}\\
+
+
+\hrulefill
+
+
+\subsection*{Exercise 2:}
+Backpropagation with single modified neuron:
+\begin{itemize}
+\item Input $x$: Set the corresponding activation $a_{j}^{1}$ for the input layer.
+\item Feedforward: For each $l = 2,3,\ldots,L$ compute
+\[z_{j}^{l} = f\left(\sum_{j} w_{j} x_{j}+b^{l}\right) \text{ and } a_{j}^{l} = \sigma(z_{j}^{l})\]
+\item Output error $\delta_{j}^{L}$: ompute the vector
+\[ \delta_{j}^{L} = \frac{\partial C}{\partial a_{j}^{L}} \sigma'(z_{j}^{L}) z_{j}^{l'} (f_{j})
+\]
+\item Backpropagate the error: For each $l = L-1, L-2, \cdots , 2$ compute
+  \[ \delta_{j}^{l} = ((w^{l+1})^{T}\delta^{l+1}) \odot \sigma'(z^{l})z^{l'}(f)\]
+\item Output: The gradient of the cost function is given by
+\[\frac{\partial C}{\partial w_{jk}^{l}} = a_{k}^{l-1}\delta_{j}^{l} \text{ and }\frac{\partial C}{\partial b_{j}^{l}}= \delta_{j}^{l}\]
+\end{itemize}
+
+\subsection*{Exercise 3.2:}
+The objective is to get to know the Caffe , a powerful framework of Neural Network and Deep Learning. First of all, to install, compile Caffe and run the example. Then use the Imagenet network  set up in the previous problem to classify each image downloaded from \url{https://vision.in.tum.de/teaching/ss2015/mlpractice_ss2015/slides}.
+
+Before Classification, we preprocessed the images by setting the input channel order for BRG as needed for the reference ImageNet model, setting the mean to subtract for entering the data, letting the reference model operate on images in [0,255] instead of [0,1] and swapping the channel which makes the reference model has channel in BGR order instead of RGB.  
+
+For the 8 images, we use the ImageNet network to predict the class of which, and provide the class name, the probability of that class, the entropy of the prediction. From the class names, we can see that the results are pretty accurate except for image 5 which is classified as a mouse by mistake. This mistake is caused by the lack of enough preprocessing, we suppose. From the definition of the prediction   probability (softmax), we can know that the higher the probability, the more accurate the prediction  result is. In other words, the lower the probability, the larger the uncertainty is.  More than that, we also use the prediction probability to compute the entropy,  the larger the entropy, the larger the uncertainty will be.  From the eight results, the larger the probability, the smaller the entropy, meaning the larger the certainty, the larger the prediction accuracy.
+
+\subsection*{Reference}
+
+
+\url{http://neuralnetworksanddeeplearning.com/chap1.html}
+
+\url{http://neuralnetworksanddeeplearning.com/chap2.html}
+
+\url{http://caffe.berkeleyvision.org}
+
+\url{http://caffe.berkeleyvision.org/gathered/examples/imagenet.html}
+
+\url{http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/filter_visualization.ipynb}
+
+\url{http://nbviewer.ipython.org/github/BVLC/caffe/blob/master/examples/classification.ipynb}
+
+\end{document}
