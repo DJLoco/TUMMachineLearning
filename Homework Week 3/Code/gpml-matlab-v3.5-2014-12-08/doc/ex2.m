@@ -63,35 +63,57 @@ disp('likfunc = @likErf;')
 likfunc = @likErf;
 disp(' ')
 
+disp('hyp = minimize(hyp, @gp, -40, @infEP, meanfunc, covfunc, likfunc, x, y);')
+hyp = minimize(hyp, @gp, -40, @infEP, meanfunc, covfunc, likfunc, x, y);
+disp('[a b c d lp] = gp(hyp, @infEP, meanfunc, covfunc, likfunc, x, y, t, ones(n, 1));')
+[a b c d lp] = gp(hyp, @infEP, meanfunc, covfunc, likfunc, x, y, t, ones(n,1));
+disp(' ')
+figure(7)
+set(gca, 'FontSize', 24)
+disp('plot(x1(1,:), x1(2,:), ''b+''); hold on')
+plot(x1(1,:), x1(2,:), 'b+', 'MarkerSize', 12); hold on
+disp('plot(x2(1,:), x2(2,:), ''r+'')')
+plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12)
+disp('contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)')
+contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)
+[c h] = contour(t1, t2, reshape(exp(lp), size(t1)), [0.5 0.5]);
+set(h, 'LineWidth', 2)
+colorbar
+grid
+axis([-4 4 -4 4])
+if write_fig, print -depsc f7.eps; end
+disp(' '); disp('Hit any key to continue...'); pause
 
-likFuncs = {@likErf @likPoisson @likWeibull};
-covFuncs = {@covSEard};
-infFuncs = {@infEP @infLaplace};
-
-
-for i = 1:length(likFuncs)
-    for j = 1:length(covFuncs)
-        for k = 1:length(infFuncs)
-            hyp = minimize(hyp, @gp, -40, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y);
-            [a b c d lp] = gp(hyp, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y, t, ones(n,1));
-            figure()
-            set(gca, 'FontSize', 24)
-            disp('plot(x1(1,:), x1(2,:), ''b+''); hold on')
-            plot(x1(1,:), x1(2,:), 'b+', 'MarkerSize', 12); hold on
-            disp('plot(x2(1,:), x2(2,:), ''r+'')')
-            plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12)
-            disp('contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)')
-            contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)
-            [c h] = contour(t1, t2, reshape(exp(lp), size(t1)), [0.5 0.5]);
-            set(h, 'LineWidth', 2)
-            colorbar
-            grid
-            axis([-4 4 -4 4])
-            if write_fig, print -depsc f7.eps; end
-            disp(' '); disp('Hit any key to continue...'); pause
-        end
-    end
-end
-
+disp('large scale classification using the FITC approximation')
+disp('[u1,u2] = meshgrid(linspace(-2,2,5)); u = [u1(:),u2(:)];')
+[u1,u2] = meshgrid(linspace(-2,2,5)); u = [u1(:),u2(:)]; clear u1; clear u2
+disp('nu = size(u,1);')
+nu = size(u,1);
+disp('covfuncF = {@covFITC, {covfunc}, u};')
+covfuncF = {@covFITC, {covfunc}, u};
+disp('inffunc = @infFITC_Laplace;')
+inffunc = @infFITC_EP;                     % one could also use @infFITC_Laplace
+disp('hyp = minimize(hyp, @gp, -40, inffunc, meanfunc, covfuncF, likfunc, x, y);')
+hyp = minimize(hyp, @gp, -40, inffunc, meanfunc, covfuncF, likfunc, x, y);
+disp('[a b c d lp] = gp(hyp, inffunc, meanfunc, covfuncF, likfunc, x, y, t, ones(n,1));')
+[a b c d lp] = gp(hyp, inffunc, meanfunc, covfuncF, likfunc, x, y, t, ones(n,1));
+disp(' ')
+figure(8)
+set(gca, 'FontSize', 24)
+disp('plot(x1(1,:), x1(2,:), ''b+''); hold on')
+plot(x1(1,:), x1(2,:), 'b+', 'MarkerSize', 12); hold on
+disp('plot(x2(1,:), x2(2,:), ''r+'')')
+plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12)
+disp('contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)')
+contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)
+[c h] = contour(t1, t2, reshape(exp(lp), size(t1)), [0.5 0.5]);
+set(h, 'LineWidth', 2)
+disp('plot(u(:,1),u(:,2),''ko'', ''MarkerSize'', 12)')
+plot(u(:,1),u(:,2),'ko', 'MarkerSize', 12)
+colorbar
+grid
+axis([-4 4 -4 4])
+if write_fig, print -depsc f8.eps; end
+disp(' ')
 
 
