@@ -116,3 +116,36 @@ grid
 axis([-4 4 -4 4])
 if write_fig, print -depsc f8.eps; end
 disp(' ')
+
+
+likFuncs = {@likErf @likPoisson @likWeibull};
+covFuncs = {@covSEard {@covFITC, {covfunc}, u} @covEye};
+infFuncs = {@infEP @infLaplace};
+
+
+for i = 1:length(likFuncs)
+	  for j = 1:length(covFuncs)
+		    for k = 1:length(infFuncs)
+			      hyp = minimize(hyp, @gp, -40, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y);
+[a b c d lp] = gp(hyp, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y, t, ones(n,1));
+figure()
+set(gca, 'FontSize', 24)
+disp('plot(x1(1,:), x1(2,:), ''b+''); hold on')
+plot(x1(1,:), x1(2,:), 'b+', 'MarkerSize', 12); hold on
+disp('plot(x2(1,:), x2(2,:), ''r+'')')
+plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12)
+disp('contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)')
+contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)
+[c h] = contour(t1, t2, reshape(exp(lp), size(t1)), [0.5 0.5]);
+set(h, 'LineWidth', 2)
+colorbar
+grid
+axis([-4 4 -4 4])
+if write_fig, print -depsc f7.eps; end
+disp(' '); disp('Hit any key to continue...'); pause
+end
+end
+end
+
+
+
