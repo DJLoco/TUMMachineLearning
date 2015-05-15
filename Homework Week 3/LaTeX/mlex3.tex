@@ -32,15 +32,17 @@ The objective is to use the Boosting framework in MATLAB to train a AdaBoost cla
   \item Testing labels: 10000*1 uint8
   \end{itemize}
 \item Train the default AdaBoost on the first 1000 samples using fitensemble: 
-ClassTreeEns = fitensemble(TrainImages(1:1000,:),TrainLabels(1:1000),'AdaBoostM2',1000,'Tree');
+\texttt{ClassTreeEns = fitensemble(TrainImages(1:1000,:),\\
+\hspace*{35mm} TrainLabels(1:1000),'AdaBoostM2',1000,'Tree');}
 \item Test against the test set using misclassification error:\\
-L = loss(ClassTreeEns,TestImages,TestLabels); 
+\texttt{L = loss(ClassTreeEns,TestImages,TestLabels);}
 
 The classification error is 0.3765.
-\item Plot the training error for 100, 200,… until 1000 the find the optimal number of learning rounds. According the figure, when learning rounds is 800, the resubstitution loss is the least,  which is 0.3.
+\item According the figure, when learning rounds is 800, the resubstitution loss is the least,  which is 0.3.
 \item Run the training on the entire dataset. The classification error becomes 0.3300.
 \item Train the LPBoost on the first 1000 samples:\\
-ClassTreeEns = fitensemble(TrainImages(1:1000,:),TrainLabels(1:1000),’LPBoost’,1000,’Tree’);
+\texttt{ClassTreeEns = fitensemble(TrainImages(1:1000,:),\\
+ \hspace*{35mm} TrainLabels(1:1000),’LPBoost’,1000,’Tree’);}
 
 The classification error is high, which is 0.6478. 
 \end{itemize}
@@ -48,24 +50,21 @@ The classification error is high, which is 0.6478.
 \subsection*{Exercise 2: Gaussian Process Classification}
 The objective is to get familiar with the Gaussian Process Classification tool and compare with the Boosting classification method. 
 
- Download, install and run the demoClassification.m.
-    Play around with the parameters. (Change the kernel which is to change mean and covariance function, the inference method, the likelihood function and evaluate on a new test set) I only change the inference method, for the others, which will be quite time-consuming because you have to take care of parameters of all the functions. 
+To get to know the Gaussian process we changed the parameters. The inference method specifies how the (approximate) posterior for a Gaussian process is calculated. Several methods are offered. We tried \texttt{'infEP'} and \texttt{'infLaplace'}, however there was no great impact on the result. 
 
-     The default parameters are: 
-     meanfunc = @meanConst;    covfunc = @covSEard;    likfunc = @likErf;
-     covfuncF = {@covFITC,{covfunc},u};       inffunc = @infFITC_EP.  The result is:
-    Function evaluation     38;  Value 4.413667e+01
-      1. inference method—>inffunc = @infFITC_Laplace
-    The result is :    Function evaluation      9;  Value 4.304855e+01.
+For the covariance function we utilised \texttt{'covSEard'} and \texttt{'covSEiso'}.
 
+Finally we tried different likelihood functions. There was a great change not only in the prediction but also the performance of the code. We obtained the most accurate results with \texttt{'likErf'} and \texttt{'likLogistic'}.
 
-3)   Evaluate the classifier with respect to uncertainty estimation. 
-I couldn't continue from here because I don't know how to tell if the classifier is correct or not. I have asked  several people I know from our class, they haven't gone that far. 
-About the histogram, MATLAB have the function to compute it.
-4)  Use Boosting Classifier and compare the histogram plots.
-This is not difficult because the Boosting classifier is easy to use, which you can find from my code!
-Thank you again,  and good luck!
+You can find our code \texttt{ex2.m} and \texttt{histo.m} within the doc folder of gpml.
+Unfortunately the prediction of new test data seems to be incorrect. We tried to follow \texttt{demoClassification} by finding all the indices where $\exp(lp)>.5$. This is true for almost every test data. Thus, we can merely guess what the histogramms should show. False predictions will often happen when $p(x|X,y) \approx \frac 12$, which will lead to a maximal uncertainty.
 
 \subsection*{Reference}
+
+\url{http://de.mathworks.com/help/stats/fitensemble.html}
+
+\url{http://yann.lecun.com/exdb/mnist/}
+
+\url{http://gaussianprocess.org/}
 
 \end{document}
