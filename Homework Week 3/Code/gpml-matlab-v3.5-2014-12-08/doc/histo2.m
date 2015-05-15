@@ -54,44 +54,48 @@ disp(' '); disp('Hit any key to continue...'); pause
 
 
 %%%%%%% Initializing parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% @infEP @covSEard
 disp(' ')
 disp('meanfunc = @meanConst; hyp.mean = 0;')
 meanfunc = @meanConst; hyp.mean = 0;
 disp('covfunc = @covSEard;   hyp.cov = log([1 1 1]);')
-covfunc = @covSEard;   hyp.cov = log([1 1 1]);
+% covfunc = @covSEard;   hyp.cov = log([1 1 1]);
+% covfunc = @covLIN;
+covfunc = {@covPoly,3}; hyp.cov =  log([2;2]);
 disp('likfunc = @likErf;')
 likfunc = @likErf;
 disp(' ')
 
 
-likFuncs = {@likErf @likPoisson @likWeibull};
-covFuncs = {@covSEard};
-infFuncs = {@infEP @infLaplace};
+%%%%%%% Generating of test data with respect to covariance matrices S1, S2 %%%%%%
+xt1 = bsxfun(@plus, chol(S1)'*gpml_randn(0.2, 2, n1), m1);
+xt2 = bsxfun(@plus, chol(S2)'*gpml_randn(0.3, 2, n2), m2);         
+disp(' ')
+xt = [xt1 xt2]'; yt = [-ones(1,n1) ones(1,n2)]';
+disp(' ')
 
+disp('hyp = minimize(hyp, @gp, -40, @infEP, meanfunc, covfunc, likfunc, x, y);')
+hyp = minimize(hyp, @gp, -40, @infEP, meanfunc, covfunc, likfunc, x, y);
+disp('[a b c d lp] = gp(hyp, @infEP, meanfunc, covfunc, likfunc, x, y, t, ones(n, 1));')
+[a b c d lp] = gp(hyp, @infEP, meanfunc, covfunc, likfunc, x, y, xt, ...
+                  yt);
 
-for i = 1:length(likFuncs)
-    for j = 1:length(covFuncs)
-        for k = 1:length(infFuncs)
-            hyp = minimize(hyp, @gp, -40, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y);
-            [a b c d lp] = gp(hyp, infFuncs(k), meanfunc, covFuncs(j), likFuncs(i), x, y, t, ones(n,1));
-            figure()
-            set(gca, 'FontSize', 24)
-            disp('plot(x1(1,:), x1(2,:), ''b+''); hold on')
-            plot(x1(1,:), x1(2,:), 'b+', 'MarkerSize', 12); hold on
-            disp('plot(x2(1,:), x2(2,:), ''r+'')')
-            plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12)
-            disp('contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)')
-            contour(t1, t2, reshape(exp(lp), size(t1)), 0.1:0.1:0.9)
-            [c h] = contour(t1, t2, reshape(exp(lp), size(t1)), [0.5 0.5]);
-            set(h, 'LineWidth', 2)
-            colorbar
-            grid
-            axis([-4 4 -4 4])
-            if write_fig, print -depsc f7.eps; end
-            disp(' '); disp('Hit any key to continue...'); pause
-        end
-    end
-end
+Pred = -ones(120,1);
+I = find(exp(lp) < .5);
+Pred(I) = 1;
 
+falseSet = find(Pred - yt ~= 0);
+trueSet = find(Pred - yt == 0);
 
+figure()
+disp('Histogramm of uncertainties (classifier was correct)')
+p = exp(lp(trueSet));
+h = -(p.*log(p)+(1-p).*log(1-p));
+hist(h,10);
 
+disp(' '); disp('Hit any key to continue...'); pause
+disp('Histogramm of uncertainties (classifier was incorrect)')
+figure()
+p = exp(lp(falseSet));
+h = -(p.*log(p)+(1-p).*log(1-p));
+hist(h,10);

@@ -1,3 +1,5 @@
+%% Different parameters
+
 disp(' '); disp('clear all, close all')
 clear all, close all
 write_fig = 0;
@@ -11,14 +13,14 @@ disp('m1 = [0.75; 0]; m2 = [-0.75; 0];                            % the two mean
 m1 = [0.75; 0]; m2 = [-0.75; 0];
 disp(' ')
 
-%%%%%%% Generating of data with respect to covariance matrices S1, S2 %%%%%%
+% Generating of data with respect to covariance matrices S1, S2 %%%%%%
 disp('x1 = bsxfun(@plus, chol(S1)''*gpml_randn(0.2, 2, n1), m1);')
 x1 = bsxfun(@plus, chol(S1)'*gpml_randn(0.2, 2, n1), m1);
 disp('x2 = bsxfun(@plus, chol(S2)''*gpml_randn(0.3, 2, n2), m2);')         
 x2 = bsxfun(@plus, chol(S2)'*gpml_randn(0.3, 2, n2), m2);         
 disp(' ')
 
-%%%%%%% Displaying input data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Displaying input data
 disp('x = [x1 x2]''; y = [-ones(1,n1) ones(1,n2)]'';')
 x = [x1 x2]'; y = [-ones(1,n1) ones(1,n2)]';
 figure(6)
@@ -28,7 +30,7 @@ disp('plot(x2(1,:), x2(2,:), ''r+'');');
 plot(x2(1,:), x2(2,:), 'r+', 'MarkerSize', 12);
 disp(' ')
 
-%%%%%%% Generating test inputs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Generating test inputs
 disp('[t1 t2] = meshgrid(-4:0.1:4,-4:0.1:4);')
 [t1 t2] = meshgrid(-4:0.1:4,-4:0.1:4);
 disp('t = [t1(:) t2(:)]; n = length(t);               % these are the test inputs')
@@ -50,16 +52,15 @@ colorbar
 grid
 axis([-4 4 -4 4])
 if write_fig, print -depsc f6.eps; end
-disp(' '); disp('Hit any key to continue...'); pause
+% disp(' '); disp('Hit any key to continue...'); pause
 
 
-%%%%%%% Initializing parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Initializing parameters
 infs = {@infEP @infLaplace};
 liks = {{@likErf []} {@likLogistic []} {@likUni []} {@likGauss log(0.1)}};
-covs = {{@covSEard log([1 1 1])} {@covSEiso log([0.9; 2])}};
+covs = {{@covSEard log([1 1 1])} {@covSEiso log([0.9; 2])} {@covLIN []}, {{@covPoly,3} log([2;2])}};
 
-
-%%%%% Different inference function %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Different inference function
 l = 1;
 k = 1;
 for i = 1:length(infs)
@@ -86,10 +87,10 @@ for i = 1:length(infs)
     grid
     axis([-4 4 -4 4])
     if write_fig, print -depsc f7.eps; end
-    disp(' '); disp('Hit any key to continue...'); pause
+    %  disp(' '); disp('Hit any key to continue...'); pause
 end
 
-%%%%% Different likelihood function %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Different likelihood function
 i = 1;
 k = 1;
 for l = 1:length(liks)
@@ -116,10 +117,10 @@ for l = 1:length(liks)
     grid
     axis([-4 4 -4 4])
     if write_fig, print -depsc f7.eps; end
-    disp(' '); disp('Hit any key to continue...'); pause
+    % disp(' '); disp('Hit any key to continue...'); pause
 end
 
-%%%%% Different kernel %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Different kernel
 i = 1;
 l = 1;
 for k = 1:length(covs)
@@ -146,5 +147,5 @@ for k = 1:length(covs)
     grid
     axis([-4 4 -4 4])
     if write_fig, print -depsc f7.eps; end
-    disp(' '); disp('Hit any key to continue...'); pause
+    % disp(' '); disp('Hit any key to continue...'); pause
 end
